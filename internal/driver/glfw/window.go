@@ -480,7 +480,7 @@ func (w *window) destroy(d *gLDriver) {
 	if w.master {
 		d.Quit()
 	} else if runtime.GOOS == "darwin" {
-		d.focusPreviousWindow()
+		go d.focusPreviousWindow()
 	}
 }
 
@@ -561,6 +561,7 @@ func (w *window) mouseMoved(viewport *glfw.Window, xpos float64, ypos float64) {
 	viewport.SetCursor(cursor)
 	if obj != nil && !w.objIsDragged(obj) {
 		ev := new(desktop.MouseEvent)
+		ev.AbsolutePosition = w.mousePos
 		ev.Position = pos
 		ev.Button = w.mouseButton
 
@@ -580,6 +581,7 @@ func (w *window) mouseMoved(viewport *glfw.Window, xpos float64, ypos float64) {
 		if w.mouseButton > 0 {
 			draggedObjPos := w.mouseDragged.(fyne.CanvasObject).Position()
 			ev := new(fyne.DragEvent)
+			ev.AbsolutePosition = w.mousePos
 			ev.Position = w.mousePos.Subtract(w.mouseDraggedOffset).Subtract(draggedObjPos)
 			ev.DraggedX = w.mousePos.X - w.mouseDragPos.X
 			ev.DraggedY = w.mousePos.Y - w.mouseDragPos.Y
