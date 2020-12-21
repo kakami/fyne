@@ -27,12 +27,17 @@ func TestLabel_Hide(t *testing.T) {
 
 func TestLabel_MinSize(t *testing.T) {
 	label := NewLabel("Test")
-	min := label.MinSize()
+	minA := label.MinSize()
 
-	assert.True(t, min.Width > theme.Padding()*2)
+	assert.Less(t, theme.Padding()*2, minA.Width)
 
 	label.SetText("Longer")
-	assert.True(t, label.MinSize().Width > min.Width)
+	minB := label.MinSize()
+	assert.Less(t, minA.Width, minB.Width)
+
+	label.Text = "."
+	minC := label.MinSize()
+	assert.Greater(t, minB.Width, minC.Width)
 }
 
 func TestLabel_Resize(t *testing.T) {
@@ -158,11 +163,11 @@ func TestLabel_ChangeTruncate(t *testing.T) {
 	text := NewLabel("Hello")
 	c.SetContent(text)
 	c.Resize(text.MinSize())
-	test.AssertImageMatches(t, "label-default.png", c.Capture())
+	test.AssertImageMatches(t, "label/default.png", c.Capture())
 
 	truncSize := text.MinSize().Subtract(fyne.NewSize(10, 0))
 	text.Resize(truncSize)
 	text.Wrapping = fyne.TextTruncate
 	text.Refresh()
-	test.AssertImageMatches(t, "label-truncate.png", c.Capture())
+	test.AssertImageMatches(t, "label/truncate.png", c.Capture())
 }

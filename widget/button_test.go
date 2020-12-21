@@ -236,9 +236,31 @@ func TestButton_Layout(t *testing.T) {
 			window := test.NewWindow(button)
 			window.Resize(button.MinSize().Max(fyne.NewSize(150, 200)))
 
-			test.AssertImageMatches(t, "button_layout_"+name+".png", window.Canvas().Capture())
+			test.AssertImageMatches(t, "button/layout_"+name+".png", window.Canvas().Capture())
 
 			window.Close()
 		})
 	}
+}
+
+func TestButton_ChangeTheme(t *testing.T) {
+	app := test.NewApp()
+	defer test.NewApp()
+	app.Settings().SetTheme(theme.LightTheme())
+
+	b := widget.NewButton("Test", func() {})
+	w := test.NewWindow(b)
+	defer w.Close()
+	w.Resize(fyne.NewSize(200, 200))
+	b.Resize(b.MinSize())
+	b.Move(fyne.NewPos(10, 10))
+
+	test.AssertImageMatches(t, "button/theme_initial.png", w.Canvas().Capture())
+
+	test.WithTestTheme(t, func() {
+		b.Resize(b.MinSize())
+		b.Refresh()
+		time.Sleep(100 * time.Millisecond)
+		test.AssertImageMatches(t, "button/theme_changed.png", w.Canvas().Capture())
+	})
 }
